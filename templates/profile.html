@@ -148,11 +148,11 @@
                     </p>
                 </h1>
                 <transition name="fade">
-                    <div class="subtitle" v-if='data.status.online == false'>
-                        <a class='circle'>●</a> Offline
+                    <div class="subtitle" v-if="data.status.online == false">
+                        <a class="circle">●</a> Offline
                     </div>
-                    <div class="subtitle" v-else-if='data.status.online == true'>
-                        <a class='circle green'>●</a> Online
+                    <div class="subtitle" v-else-if="data.status.online == true">
+                        <a class="circle green">●</a> Online
                     </div>
                 </transition>
             </div>
@@ -162,7 +162,7 @@
                 -->
             </div>
             <transition name="click">
-                <div class="online-infomation" v-if='data.status.online == true'
+                <div class="online-infomation" v-if="data.status.online == true"
                     :key="actionIntToStr(data.status.status)">
                     <% actionIntToStr(data.status.status) %>
                 </div>
