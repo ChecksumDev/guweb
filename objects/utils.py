@@ -82,7 +82,7 @@ async def fetch_geoloc(ip: str) -> str:
 
 async def validate_captcha(data: str) -> bool:
     """Verify `data` with hcaptcha's API."""
-    url = f'https://hcaptcha.com/siteverify'
+    url = 'https://hcaptcha.com/siteverify'
 
     data = {
         'secret': glob.config.hCaptcha_secret,

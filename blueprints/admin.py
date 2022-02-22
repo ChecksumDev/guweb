@@ -19,11 +19,11 @@ admin = Blueprint('admin', __name__)
 @admin.route('/dashboard')
 async def home():
     """Render the homepage of guweb's admin panel."""
-    if not 'authenticated' in session:
+    if 'authenticated' not in session:
         return await flash('error', 'Please login first.', 'login')
 
     if not session['user_data']['is_staff']:
-        return await flash('error', f'You have insufficient privileges.', 'home')
+        return await flash('error', 'You have insufficient privileges.', 'home')
 
     # fetch data from database
     dash_data = await glob.db.fetch(

@@ -150,7 +150,7 @@ async def settings_avatar_post():
     filename, file_extension = os.path.splitext(avatar.filename.lower())
 
     # bad file extension; deny post
-    if not file_extension in ALLOWED_EXTENSIONS:
+    if file_extension not in ALLOWED_EXTENSIONS:
         return await flash('error', 'The image you select must be either a .JPG, .JPEG, or .PNG file!', 'settings/avatar')
 
     # remove old avatars
@@ -186,10 +186,18 @@ async def settings_custom_post():
 
     if banner is not None and banner.filename:
         _, file_extension = os.path.splitext(banner.filename.lower())
-        if not file_extension in ALLOWED_EXTENSIONS:
-            return await flash_with_customizations('error', f'The banner you select must be either a .JPG, .JPEG, .PNG or .GIF file!', 'settings/custom')
+        if file_extension not in ALLOWED_EXTENSIONS:
+            return await flash_with_customizations(
+                'error',
+                'The banner you select must be either a .JPG, .JPEG, .PNG or .GIF file!',
+                'settings/custom',
+            )
 
-        banner_file_no_ext = os.path.join(f'.data/banners', f'{session["user_data"]["id"]}')
+
+        banner_file_no_ext = os.path.join(
+            '.data/banners', f'{session["user_data"]["id"]}'
+        )
+
 
         # remove old picture
         for ext in ALLOWED_EXTENSIONS:
@@ -201,10 +209,18 @@ async def settings_custom_post():
 
     if background is not None and background.filename:
         _, file_extension = os.path.splitext(background.filename.lower())
-        if not file_extension in ALLOWED_EXTENSIONS:
-            return await flash_with_customizations('error', f'The background you select must be either a .JPG, .JPEG, .PNG or .GIF file!', 'settings/custom')
+        if file_extension not in ALLOWED_EXTENSIONS:
+            return await flash_with_customizations(
+                'error',
+                'The background you select must be either a .JPG, .JPEG, .PNG or .GIF file!',
+                'settings/custom',
+            )
 
-        background_file_no_ext = os.path.join(f'.data/backgrounds', f'{session["user_data"]["id"]}')
+
+        background_file_no_ext = os.path.join(
+            '.data/backgrounds', f'{session["user_data"]["id"]}'
+        )
+
 
         # remove old picture
         for ext in ALLOWED_EXTENSIONS:
@@ -264,17 +280,15 @@ async def settings_password_post():
 
     # check old password against db
     # intentionally slow, will cache to speed up
-    if pw_bcrypt in bcrypt_cache:
-        if pw_md5 != bcrypt_cache[pw_bcrypt]: # ~0.1ms
-            if glob.config.debug:
-                log(f"{session['user_data']['name']}'s change pw failed - pw incorrect.", Ansi.LYELLOW)
-            return await flash('error', 'Your old password is incorrect.', 'settings/password')
-    else: # ~200ms
-        if not bcrypt.checkpw(pw_md5, pw_bcrypt):
-            if glob.config.debug:
-                log(f"{session['user_data']['name']}'s change pw failed - pw incorrect.", Ansi.LYELLOW)
-            return await flash('error', 'Your old password is incorrect.', 'settings/password')
-
+    if (
+        pw_bcrypt in bcrypt_cache
+        and pw_md5 != bcrypt_cache[pw_bcrypt]
+        or pw_bcrypt not in bcrypt_cache
+        and not bcrypt.checkpw(pw_md5, pw_bcrypt)
+    ): # ~0.1ms
+        if glob.config.debug:
+            log(f"{session['user_data']['name']}'s change pw failed - pw incorrect.", Ansi.LYELLOW)
+        return await flash('error', 'Your old password is incorrect.', 'settings/password')
     # remove old password from cache
     if pw_bcrypt in bcrypt_cache:
         del bcrypt_cache[pw_bcrypt]
